@@ -1,0 +1,95 @@
+ 
+ \documentclass{article}
+\usepackage{amsmath,amscd,amsbsy,amssymb,latexsym,url,bm,amsthm}
+\usepackage{epsfig,graphicx,subfigure}
+\usepackage{enumitem,balance}
+\usepackage{wrapfig}
+\usepackage{mathrsfs, euscript}
+\usepackage[usenames]{xcolor}
+\usepackage{hyperref}
+\usepackage[vlined,ruled,commentsnumbered,linesnumbered]{algorithm2e}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{exercise}{Exercise}[section]
+\newtheorem*{solution}{Solution}
+\theoremstyle{definition}
+\hypersetup{hidelinks}
+\definecolor{steelblue}{rgb}{0.27,0.51,0.71} 
+
+\numberwithin{equation}{section}
+\numberwithin{figure}{section}
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+
+\newcommand{\postscript}[2]
+ {\setlength{\epsfxsize}{#2\hsize}
+  \centerline{\epsfbox{#1}}}
+
+\renewcommand{\baselinestretch}{1.0}
+
+
+\makeatletter \renewenvironment{proof}[1][Proof] {\par\pushQED{\qed}\normalfont\topsep6\p@\@plus6\p@\relax\trivlist\item[\hskip\labelsep\bfseries#1\@addpunct{.}]\ignorespaces}{\popQED\endtrivlist\@endpefalse} \makeatother
+\makeatletter
+\renewenvironment{solution}[1][Solution] {\par\pushQED{\qed}\normalfont\topsep6\p@\@plus6\p@\relax\trivlist\item[\hskip\labelsep\bfseries#1\@addpunct{.}]\ignorespaces}{\popQED\endtrivlist\@endpefalse} \makeatother
+
+
+
+\begin{document}
+\noindent
+
+%========================================================================
+\noindent\framebox[\linewidth]{\shortstack[c]{
+\Large{\textbf{Final Project}}\vspace{1mm}\\
+CS420-Machine learning, Shikui Tu, Spring 2018}}
+\begin{center}
+
+\footnotesize{\color{steelblue}$*$ Name:Zhiwen Qiang  \quad Student ID:515030910367 \quad Email: qlightman@163.com}
+\end{center}
+
+\section{Project description.}
+
+\section{Algorithm 1}
+\subsection{Solution ideas and algorithms.}
+
+
+
+
+
+
+
+\section{Factor Analysis (FA)}
+
+\subsection{Pseudo-codes}
+\begin{algorithm}[H]
+		\BlankLine
+		\SetKwInOut{Input}{input}
+		\SetKwInOut{Output}{output}
+		\caption{FCM algorithm}\label{FCM}
+		\Input{A batch of data points.}
+		\Output{Dataset being divided into several groups.}
+		\BlankLine
+        Initialize $U=[u_{ij}]$ matirx, $U^{0}$ \\
+        
+        
+		\While{$||U^{k+1}-U^{k}||>=\varepsilon$}{
+		     At k-step: calculate the centers vectors $C^{k}=[c_j]$ with $U^{k}$\\
+		     Update $U^{k}$,$U^{k+1}$
+		}
+	\end{algorithm}
+
+
+
+\section{Independent Component Analysis (ICA)}
+
+
+
+\section{Causal discovery algorithms}
+\section{Causal tree reconstruction}
+\hspace{2mm}
+
+
+%========================================================================
+\end{document}
