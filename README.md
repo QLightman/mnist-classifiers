@@ -27,7 +27,7 @@ pip install opencv-python
 ```
 to install the cv2 module.
 
-## TraditionalMethods
+## Traditional Methods
 For this part, we implment five algorithms, SVM, DecisionTree, Logistic Regression , MLP and RandomForest.
 
 The usage of each traditional algorithms are similar, type
@@ -36,7 +36,7 @@ python ${file_name}.py
 ```
 to see the results. You can also use the original modified MNIST data, the enlarged data, the data operated by HOG to see the results.
 
-## DeeplearingMethods
+## Deeplearing Methods
 For this part, we implemented three different deep learning algorithm, CNN, CapsNet and DenseNets. Their usage are as follows:
 ### CNN
 Type
@@ -60,7 +60,7 @@ python Densenet_MNIST.py
 to see the results.
 
 ## Models
-Here, we also include some models of the TraditionalMethods, we don't put the models for DeeplearingMethods since it is too large.
+Here, we also include some models of the traditional methods, we don't put the models for deeplearing methods since it is too large.
 
 The twos models are the best results we get in handling traditional methods. The accuracy of [60000_hog_svm_9930.m](https://github.com/QLightman/mnist-classifiers/blob/master/model/60000_hog_svm_9930.m) is 99.3%, the arruracy of [120000_hog_svm_9933.m](https://github.com/QLightman/mnist-classifiers/blob/master/model/120000_hog_svm_9933.m) is 99.33%.
 
