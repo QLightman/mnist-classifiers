@@ -39,19 +39,28 @@ to see the results. You can also use the original modified MNIST data, the enlar
 ## DeeplearingMethods
 For this part, we implemented three different deep learning algorithm, CNN, CapsNet and DenseNets. Their usage are as follows:
 ### CNN
+Type
 ```
 python main.py
 ```
+to see the results.
+
 ### CapsNet
+Type
 ```
 python main.py
 ```
+to see the results.
+
 ### DenseNets
 Type
 ```
 python Densenet_MNIST.py
 ```
 to see the results.
+
+## Models
+Here, we also include some models of the TraditionalMethods, we don't put the models for DeeplearingMethods since it is too large.
 
 ## Collaborators
 [LeoNardo10521](https://github.com/LeoNardo10521)
