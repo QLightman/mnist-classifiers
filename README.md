@@ -62,6 +62,8 @@ to see the results.
 ## Models
 Here, we also include some models of the TraditionalMethods, we don't put the models for DeeplearingMethods since it is too large.
 
+The twos models are the best results we get in handling traditional methods. The accuracy of [60000_hog_svm_9930.m](https://github.com/QLightman/mnist-classifiers/blob/master/model/60000_hog_svm_9930.m) is 99.3%, the arruracy of [120000_hog_svm_9933.m](https://github.com/QLightman/mnist-classifiers/blob/master/model/120000_hog_svm_9933.m) is 99.33%.
+
 ## Collaborators
 [LeoNardo10521](https://github.com/LeoNardo10521)
 
