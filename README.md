@@ -59,6 +59,16 @@ python Densenet_MNIST.py
 ```
 to see the results.
 
+## Results
+| Model | Accuracy / % | 
+| :---- |:------------:| 
+| CNN(20*20,12w) | 99.33 |
+| CNN(45*45,6w) | 98.04 | 
+| CapsNet(20*20,12w) |99.23 | 
+| DenseNet(20*20,12w) |97.76 | 
+| DenseNet(45*45,6w) |97.46 | 
+
+
 ## Models
 Here, we also include some models of the traditional methods, we don't put the models for deeplearing methods since it is too large.
 
