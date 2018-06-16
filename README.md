@@ -1,9 +1,14 @@
 # mnist-classifiers
 SJTU class project for CS420
 
+## Requirements
+- [NumPy](http://www.numpy.org/)
+- [TensorFlow](https://www.tensorflow.org/)
+- [scikit-learn](http://scikit-learn.org/stable/index.html)
+- [PyTorch](http://pytorch.org/)
+
 ## Pretreatment
 
-This part was realized in the [code](https://github.com/QLightman/mnist-classifiers/blob/master/traditional_methods/pretreatment.py).
 First you have to put the **mnist_test_data**, **mnist_train_data**, **mnist_test_label**, **mnist_test_label** in the correct path.
 
 You can type 
@@ -26,6 +31,10 @@ If you get the `ImportError: No module named cv2`, use this command
 pip install opencv-python
 ```
 to install the cv2 module.
+
+<figure class="half">
+    <img src="./figures/pretreat.png" width="100%">
+</figure>
 
 ## Traditional Methods
 For this part, we implment five algorithms, SVM, DecisionTree, Logistic Regression , MLP and RandomForest.
@@ -60,6 +69,8 @@ python Densenet_MNIST.py
 to see the results.
 
 ## Results
+### Results of Deep Learning Algorithms
+
 | Model | Accuracy / % | 
 | :---- |:------------:| 
 | CNN(20*20,12w) | 99.33 |
@@ -68,6 +79,17 @@ to see the results.
 | DenseNet(20*20,12w) |97.76 | 
 | DenseNet(45*45,6w) |97.46 | 
 
+
+### The Best Results of Each Algorithm
+| Model | Accuracy / % | 
+| :---- |:------------:| 
+| Logistic Regression | 87.05 |
+| Decision Tree | 93.99 | 
+| Random Forest |97.5 | 
+| SVM |99.33 | 
+| CNN |99.33 | 
+| CapsNet |99.23 | 
+| DenseNet |97.76 | 
 
 ## Models
 Here, we also include some models of the traditional methods, we don't put the models for deeplearing methods since it is too large.
