@@ -32,9 +32,12 @@ pip install opencv-python
 ```
 to install the cv2 module.
 
+
 <figure class="half">
-    <img src="./figures/pretreat.png" width="100%">
+    <img src="./figures/pretreat.png" width="50%">
 </figure>
+Results after noise reduction and size adjustment, we can see that the result successfully reduced the noise and
+maintained the shape of the figure at the same time.
 
 ## Traditional Methods
 For this part, we implment five algorithms, SVM, DecisionTree, Logistic Regression , MLP and RandomForest.
