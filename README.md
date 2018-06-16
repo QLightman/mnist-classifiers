@@ -56,6 +56,10 @@ Type
 python main.py
 ```
 to see the results.
+<figure class="half">
+    <img src="./figures/cnn.png" width="50%">
+</figure>
+The accuracy and loss while training CNN network.
 
 ### CapsNet
 Type
@@ -81,7 +85,6 @@ to see the results.
 | CapsNet(20*20,12w) |99.23 | 
 | DenseNet(20*20,12w) |97.76 | 
 | DenseNet(45*45,6w) |97.46 | 
-
 
 ### The Best Results of Each Algorithm
 | Model | Accuracy / % | 
