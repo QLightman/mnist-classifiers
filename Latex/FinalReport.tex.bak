@@ -1,0 +1,463 @@
+
+
+\documentclass[journal]{IEEEtran}
+
+\ifCLASSINFOpdf
+\else
+\fi
+\usepackage{url}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{indentfirst}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage{tabularx}
+\usepackage{multirow}
+\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{subfigure}
+% correct bad hyphenation here
+\hyphenation{op-tical net-works semi-conduc-tor}
+
+
+\begin{document}
+
+\title{CS420: Machine Learning Project Report}
+
+\author{
+Zhiwen Qiang, 515030910367 \quad Leqi Zhu, 515020910272 \quad Yulun Wu, 5140719008
+}
+
+\maketitle
+
+% As a general rule, do not put math, special symbols or citations
+% in the abstract or keywords.
+%\begin{abstract}
+%Abstract goes here.
+%\end{abstract}
+%p
+%% Note that keywords are not normally used for peerreview papers.
+%\begin{IEEEkeywords}
+%Keyword 1, keyword 2, keyword 3.
+%\end{IEEEkeywords}
+%
+%\IEEEpeerreviewmaketitle
+
+\section{Project Description}
+
+\IEEEPARstart{T}{his} project is about building a classifier for a modified version of MNIST data. The dataset is consist of two parts, the train data\_{}label and test data\_{}label. Each data is a 45*45 array and the value is [0,255], which means the single-channel color. Each label is a number in [0,9], representing the exact number in the image. The train size is 60000 and the test size is 10000.\\p
+\indent For the data itself, we can find that for each image, there is one main number and several other spots and impurities, while the remaining space is in black. Our task is to decide which number is in the image, avoiding the influence of other spots.\\
+\indent So one natural thought is to get rid of these disturbance term and just pick the numbers out and then conduct the classification job. Actually it's the way we finished this project. We first using pretreatment to exclude the disturbance term and then trying to use traditional and deep learning methods to conduct the classification task.
+
+\section{Pretreatment}
+The project's goal is to build classifiers for a modified version of MNIST data. Following the problem oriented train of thought, pretreatment is of great importance since the data is very noisy and the size of each figure can vary. In this project, our  pretreatment is mainly threeflod:
+\subsection{Noise Reduction and Size Adjustment}
+
+Here we implemented the method to reduce the noise and adjust the size of each image. The algorithm detail is shown in \textbf{Alg. \ref{noise}}. The reason why we choose the two parameters as $0.45\%$ and $(20,20)$  are that after many controlled experiments, we find that these two can achieve the best results among others.
+
+ Part of the output images arer shown in \textbf{Fig. \ref{pretreat}}. Here we can see that the result successfully reduced the noise and maintained the shape of the figure at the same time.
+
+
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+\begin{algorithm}
+	\caption{Noise Reduction and Size Adjustment}
+	\begin{algorithmic}[1]
+		\Require Original images $I$ of size $60000*45*45$.
+		\Ensure Images $S$ of size $60000*20*20$
+		
+		\For {each image $i$ in $I$}
+		\State Calculating connected component in $i$
+		\State index=1
+		\While {the {index} largetset connected component of $i$ is smaller than the $45\%$ of the whole}
+		\State index++
+		\State Add the {index} largest connected component.
+		\EndWhile
+		\EndFor
+		\For {each image $i$ in $I$}
+		\State Cutting the margin of $i$.
+		\State Adding black margin to make $i$ a square.
+		Resize the $i$ to $(20*20)$.
+		\EndFor
+	\end{algorithmic}\label{noise}
+\end{algorithm}
+
+\begin{figure}[htbpp]
+	\centering
+	\footnotesize
+	\includegraphics[width=4cm]{fig/ML.png}
+	\caption{Results of pretreatment. The larger one is the original image, the smaller one is its corresponding pretreatment image. }
+	\label{pretreat}
+\end{figure}
+
+\subsection{Histogram of Oriented Gradients}
+We implemented the Histogram of Oriented Gradients (HOG) method, which is a feature descriptor used in computer vision and image processing for the purpose of object detection. The algorithm mainly includes the following steps:
+\begin{itemize}
+\item \textbf{Gradient computation}\\
+Computation of the gradient values.
+\item \textbf{Orientation binning}\\
+Creating the cell histograms. In this experiment, we use  unsigned gradients in conjunction with 9 histogram channels.
+\item \textbf{Descriptor blocks}\\
+Ggrouping the cells together into larger, spatially connected blocks so that the gradient strengths can be locally normalized to account for changes in illumination and contrast.
+\end{itemize}
+\textbf{Fig. \ref{hog}} is the general view of how HOG works. It is worth noting that after HOG process, the size of the image is $18*18$, so it can be viewed as a dimensionality reduction algorithm as well.
+
+
+\begin{figure}[htbp]
+	\centering
+	\footnotesize
+	\includegraphics[width=4cm]{fig/hog.png}
+	\caption{General view of HOG's precedure.}
+	\label{hog}
+\end{figure}
+
+\subsection{Data Augmentation}
+We also tried the method of data augmentation, which is to let each image randomly rotate a small angle, in this experiment, we use $15^\circ$ as its maximum rotating angle. \textbf{Fig. \ref{rotate}} are part of the results we obtained. We can see that the output image rotates a small angle compared to the original image.
+\begin{figure}[htbp]
+	\centering
+	\footnotesize
+	\includegraphics[width=4cm]{fig/rotate.png}
+	\caption{Results of Data Augmentation. The larger one is the original image, the smaller one is its corresponding rotate image. }
+	\label{rotate}
+\end{figure}
+
+
+
+
+
+
+
+
+\section{Traditional Methods}
+In this section we examine the performance of traditional classifying methods on both the orginal data and our pretreated dataset.
+A brief accuracy comparison of different tradtional algorithms on the original 45$\times$45 dataset, the official 28$\times$28 dataset and the pretreated 20$\times$20 dataset with augmentation is shown in Figure \ref{fig:comp452820}.
+%\begin{figure}[!htp]
+%	\centering
+%  \subfigure[Figure]{
+%    \begin{minipage}{4cm}
+%	  \includegraphics[width=4cm]{}
+%    \end{minipage}
+%    }
+%  \hspace{0.5cm}p
+%  \subfigure[Table]{
+%    \begin{minipage}{3.5cm}
+%	  \includegraphics[width=4cm]
+%    \end{minipage}
+%    }
+%	\caption{Comparison of Traditional Algorithms on Differently Treated Datasets}
+%	\label
+%end{figure}
+
+\begin{figure}
+\centering
+\subfigure[Figure]{
+\label{}
+\includegraphics[width=0.45\linewidth]{fig/comp452820_fig.png}}
+\subfigure[Data table]{
+\label{}
+\includegraphics[width=0.42\linewidth]{fig/comp452820_tab.png}}
+\caption{Comparison of Traditional Algorithms on Differently Treated Datasets}
+\label{fig:comp452820} %% label for entire figure
+\end{figure}
+
+
+While the result showed a significant improvement on accracy with the pretreated dataset, it also demonstrated that SVM is the best fit for the MNIST dataset among traditional methods.
+
+Thus, we focused on SVM as the traditional method of our interest, and tried to obtain the best performance by testing the effect of different parameters.
+We varied Gamma(for RBF), C and kernel functions in our experiment. The former two decides SVM's judgement and tolerance of the error, respectively; kernel determines the mapping space.
+The result is shown in Figure \ref{fig:comp_param}
+\begin{figure}[!htp]
+	\centering
+  \subfigure[Accuracy - Gamma]{
+    \begin{minipage}{4cm}
+	  \includegraphics[width=3.6cm]{fig/param_gamma.png} \\
+    \vspace{0.2cm}
+    \includegraphics[width=3.5cm]{fig/param_gamma_tab.png}
+    \end{minipage}
+    }
+  \subfigure[Accuracy - C]{
+    \begin{minipage}{4cm}
+	  \includegraphics[width=3.6cm]{fig/param_C.png} \\
+    \vspace{0.2cm}
+    \includegraphics[width=3.5cm]{fig/param_gamma_tab.png}
+    \end{minipage}
+    }
+	\caption{Performance examination of SVM by varying Gamma and C}
+	\label{fig:comp_param}
+\end{figure}
+
+From the result, we saw a strong positive correlation between classification accuracy and Gamma value,
+because SVM judges the distance between two data points more strictly in the mapping space of RBF as Gamma goes up.
+Note that higher Gamma could also result in the non-convergence of the algorithm.
+
+As for parameter C, in theory the curve should be of an arch shape.
+It is easy to comprehend that if C is too small, i.e. the tolerance towards the error is too loose, the accuracy will fall.
+But if C is too big, it may also causes over-fitting problem. We found no evidence of the latter incidence in our experiment,
+possibly due to the fact that MNIST dataset is relatively large and irregular, also our pretreatment method of data augmentation reduced the chance of over-fitting from occuring.
+The result shows that our pretreatment methods balanced the accuracy and over-fitting problem really well.
+\begin{figure}[!htp]
+	\centering
+  \includegraphics[width=3.4cm]{fig/param_kernel.png} \\
+  \vspace{0.2cm}
+  \includegraphics[width=3.5cm]{fig/param_kernel_tab.png}
+  \caption{Performance examination of SVM by varying kernel functions}
+	\label{fig:comp_param_kernel}
+\end{figure}
+
+As for the kernel, linear SVM ended up with no outcome after approximately 10 hours, showing that the dataset is most possibly not linear separable.
+The other three algorithms all converged, among which poly and RBF performed decently.
+
+However, there was still one problem we had the urge to address, that the straightened 0-1 dataset failed to capture the spacial structure of the original images, which is actually a very important information in deciding what numbers they are.
+To address this, we treated the 20$\times$20 dataset with HOG. The effect of this modification on SVM and other algorithms is shown in Figure \ref{fig:comp_hog}.
+\begin{figure}[!htp]
+	\centering
+  \subfigure[Figure]{
+    \begin{minipage}{4cm}
+	  \includegraphics[width=4cm]{fig/comp_hog.png}
+    \end{minipage}
+    }
+  \subfigure[Table]{
+    \begin{minipage}{3.5cm}
+	  \includegraphics[width=3.5cm]{fig/comp_hog_tab.png} \\
+    \vspace{0.2cm}
+    \includegraphics[width=3.5cm]{fig/comp_hog_tab_svm.png}
+    \end{minipage}
+    }
+	\caption{Examination on the effect of HOG}
+	\label{fig:comp_hog}
+\end{figure}
+
+While not so significant on other algorithms, the effect of HOG on linear algorithms is remarkable. It greatly improved Logistic regression, and made linear kernel viable for SVM.
+For SVM, it also increased the efficiency by a very large margin, and made it possible to raise up Gamma value. We finally yield an accuracy of 99.33\% on the HOG treated data.
+
+Besides the elimination of noises by dimensional reduction, this drastic improvement is also caused by that, as mentioned earlier,
+it keeps a part of the spatial structure information in the dataset by capturing the second-order interactions between local pixels(see \cite{bristow2014linear}).
+
+
+\section{Deep Learning Methods}
+In this section, we tried to use deep learning methods in this task. We first introduce a simple implement of Convolutional Neural Network (CNN). Then we tried to use some recently popular deep neural network designs to conduct the classic MNIST classification problem.
+
+\subsection{Convolutional Neural Network(CNN)}
+\subsubsection{Algorithm Introduction}
+\begin{itemize}
+  \item \textbf{Convolutional Neural Network (CNN)} is comprised of one or more convolutional layers (often with a subsampling step) and then followed by one or more fully connected layers as in a standard multilayer neural network. The architecture of a CNN is designed to take advantage of the 2D structure of an input image (or other 2D input such as a speech signal). This is achieved with local connections and tied weights followed by some form of pooling which results in translation invariant features. Another benefit of CNNs is that they are easier to train and have many fewer parameters than fully connected networks with the same number of hidden units.\cite{CNN}\\
+  \item \textbf{Dropout.}
+Because a fully connected layer occupies most of the parameters, it is prone to overfitting. One method to reduce overfitting is dropout. At each training stage, individual nodes are either "dropped out" of the net with probability $1-p$ or kept with probability$ p$, so that a reduced network is left; incoming and outgoing edges to a dropped-out node are also removed. Only the reduced network is trained on the data in that stage. The removed nodes are then reinserted into the network with their original weights.\cite{Dropout}. By avoiding training all nodes on all training data, dropout decreases overfitting. The method also significantly improves training speed. This makes model combination practical, even for deep neural nets. The technique seems to reduce node interactions, leading them to learn more robust features that better generalize to new data.\\
+\begin{figure}[H]
+\footnotesize\centering
+\centerline{\includegraphics[width=0.8\linewidth]{BN.png}}\caption{The Algorithm of Batch Normalization.}
+\label{Capsule}
+\end{figure}
+  \item \textbf{Batch Normalization} Training Deep Neural Networks is complicated by the fact
+that the distribution of each layer¡¯s inputs changes during training, as the parameters of the previous layers change. This slows down the training by requiring lower learning rates and careful parameter initialization, and makes it notoriously hard to train models with saturating nonlinearities.
+This phenomenon is called internal covariate shift, and address the problem by normalizing layer inputs.
+Batch Normalization draws its strength from making normalization a part of the model architecture and performing the normalization for each training mini-batch. Batch Normalization allows us to use much higher learning rates and be less careful about initialization. It also acts as a regularizer, in some cases eliminating the need for Dropout.\cite{DBLP:journals/corr/IoffeS15}\\
+\end{itemize}
+
+\subsubsection{Network structure}
+\begin{figure}
+\centering
+\subfigure[The structure of CNN]{
+\label{}
+\includegraphics[width=0.40\linewidth]{cnnex1.png}}
+\subfigure[The accuracy and loss while training]{
+\label{}
+\includegraphics[width=0.55\linewidth]{cnnex2.png}}
+\caption{The structure of our model and the parameters while training.}
+\label{fig:3pts} %% label for entire figure
+\end{figure}
+Our CNN model is consist of 2 convolution layers, two pooling layers, one fully-connected layer and the input/output layer. All the neural network layers use batch normalization.
+\begin{itemize}
+  \item Input layer: (20*20*120000 or 45*45*600000)
+  \item First convolution layer: kernel[5,5], channel 32.
+  \item First pooling layer
+  \item Second convolution layer: kernel[5,5], channel 48.
+  \item Second pooling layer
+  \item Full-connected layer, equipped with dropout.
+  \item Output layer.
+\end{itemize}
+
+\subsubsection{Experimental Results}
+We conduct the experiment on the original 45*45*600000 dataset and pretreated 20*20*120000 dataset. The test accuracy of pretreated dataset is \textbf{99.33\%} and \textbf{98.04\%} for original dataset. As we can see, the simple CNN model works quite well in both datasets. Unlike the traditional methods, CNN can have a high performance with original dataset.
+
+\begin{figure}
+\centering
+\subfigure[pretreated Dataset]{
+\label{}
+\includegraphics[width=0.45\linewidth]{cnn1.jpg}}
+\subfigure[Original Dataset]{
+\label{}
+\includegraphics[width=0.45\linewidth]{cnn2.jpg}}
+\caption{The validation accuracy of CNN in pretreated dataset and original dataset respectively.}
+\label{fig:3pts} %% label for entire figure
+\end{figure}
+\subsection{Capsule Network}
+\subsubsection{Algorithm Introduction}
+In this part we tried to use the idea of Hinton's Capsule Network \cite{Capsule}. in our project. A Capsule Neural Network (CapsNet) is a machine learning system that is a type of artificial neural network (ANN) that can be used to better model hierarchical relationships. The approach is an attempt to more closely mimic biological neural organization.\\
+\indent The idea is to add structures called capsules to a convolutional neural network (CNN), and to reuse output from several of those capsules to form more stable (with respect to various perturbations) representations for higher order capsules. The output is a vector consisting of the probability of an observation, and a pose for that observation. This vector is similar to what is done for example when doing classification with localization in CNNs.\\
+\indent A function called squashing function is used to ensure the short vector get shrunk to almost zero length and long vectors get shrunk to a length slightly below 1 while keep the direction the same.
+$$ v_j= \frac{{\parallel s_j\parallel}^2}{{1+\parallel s_j\parallel }^2} \frac{s_j}{\parallel s_j\parallel}$$
+The loss function used in CapsNet is the Margin loss $L_k$.:
+\begin{multline*}
+      L_k= T_k\;max(0,m^+-\parallel v_k\parallel)^2\\
+         +\lambda (1-T_k)max(0,\parallel v_k\parallel-m^-)^2
+\end{multline*}
+
+\subsubsection{Advantages}
+From the definition and the calculating concepts of CapsNet, combined with some experiment results, we can conclude the advantages of it by:
+\begin{itemize}
+  \item Requires less training data
+  \item Position and pose information are preserved.
+  \item Routing by agreement is great for overlapping objects.
+  \item Capsule activations nicely map the hierarchy of parts
+  \item Offers robustness to affine transformations
+  \item Activation vectors are easier to interpret\\
+\end{itemize}
+
+\subsubsection{Network Constructure}
+
+A simple model is shown in \ref{Capsule} introduced by \cite{Capsule}.  The architecture is shallow with only two convolutional layers and one fully connected layer. Conv1 has 256, $9 \times 9$ convolution kernels with a
+stride of 1 and ReLU activation. This layer converts pixel intensities to the activities of local feature
+detectors that are then used as inputs to the primary capsules.\\
+
+\begin{figure}[H]
+\footnotesize\centering
+\centerline{\includegraphics[width=1\linewidth]{Capsule.png}}\caption{A simple CapsNet with 3 layers.}
+\label{Capsule}
+\end{figure}
+\indent The primary capsules are the lowest level of multi-dimensional entities and, from an inverse graphics
+perspective, activating the primary capsules corresponds to inverting the rendering process. This is a
+very different type of computation than piecing instantiated parts together to make familiar wholes.
+The second layer (PrimaryCapsules) is a convolutional capsule layer with 32 channels of convolutional
+8D capsules (i.e. each primary capsule contains 8 convolutional units with a $9 \times 9$ kernel and a stride
+of 2). Each primary capsule output sees the outputs of all $256 \times81$ Conv1 units whose receptive fields overlap with the location of the center of the capsule. In total PrimaryCapsules has $[32 \times 6 \times 6]$
+capsule outputs (each output is an 8D vector) and each capsule in the $[6 \times 6]$ grid is sharing their
+weights with each other. One can see PrimaryCapsules as a Convolution layer. The final Layer (DigitCaps) has one 16D capsule per digit class and each of these capsules receives input from all the capsules in the layer below.
+
+The network we used is similar with the one discussed above. We use $20\times20$ image as input instead. The implement of CapsNet is finished in Tensorflow.
+
+
+\subsubsection{Experimental Results}
+Considering the complex network structure and resource consuming calculating when applying 45*45 dataset, we just apply the 20*20 data for 60000 and 120000. The test accuracy is \textbf{99.23\%} and \textbf{99.28\%} respectively. As we can see, the performance is almost the same as CNN model and the 120000 dataset is better than that of 60000.
+\begin{figure}
+\centering
+\subfigure[20*20*600000 Dataset]{
+\label{}
+\includegraphics[width=0.43\linewidth]{caps1.jpg}}
+\subfigure[20*20*120000 Dataset]{
+\label{}
+\includegraphics[width=0.45\linewidth]{caps2.jpg}}
+\caption{The validation accuracy of CapsNet in pretreated dataset and original dataset respectively.}
+\label{fig:3pts} %% label for entire figure
+\end{figure}
+\subsection{DenseNets}
+\subsubsection{Algorithm Introduction}
+As CNNs become increasingly deep, information about the input or gradient passes through many layers, it can vanish and ``wash out'' by the time it reaches the end (or beginning) of the network. Motivated by this research problem, the \cite{Dense} proposed DenseNets, which can obtain significant improvements over the state-of-the-art on \textit{CIFAR-10, CIFAR-100, SVHN, and ImageNet}. We believe that this kind of architecture can work well on modified MNIST data classification problem as well, so we studied, implemented it and evaulate its result in the following section.
+The features of DenseNets is that it connects each layer to every other layer in a feed-forward fashion. So this network with $L$ layers has $\frac{L(L+1)}{2}$ direct connections. As is shown in Fig. \ref{densenet}p. For each the feature-maps of all preceding layers are used as inputs, and its own feature-maps are used as inputs into all subsequent layers.
+
+\begin{figure}[htbp]
+	\centering
+	\footnotesize
+	\includegraphics[width=8.5cm]{fig/densenet.png}
+	\caption{General view of Dense Connectivity.}
+	\label{densenet}
+\end{figure}
+\subsubsection{Advantages}
+The advantages of DenseNets are as follows:
+\begin{itemize}
+\item Alleviate the vanishing-gradient problem.
+\item Strengthen feature propagation.
+\item Encourage fea- ture reuse.
+\item Substantially reduce the number of parameters.
+\end{itemize}
+
+\subsubsection{Structure}
+Fig. \ref{structure} shows the architecture of DenseNets, the input images first processed by a convolutional layer, then a dense block, a convolutional layer and a pooling layer, this process goes on until it meets the last dense block. The pooling layer can reduce the feature map sizes, while the feature map sizes match within each block.
+
+\begin{figure}[htbp]
+	\centering
+	\footnotesize
+	\includegraphics[width=8.5cm]{fig/structure.png}
+	\caption{Architecture of DenseNets we implemented.}
+	\label{structure}
+\end{figure}
+\subsubsection{Experimental Results}
+Fig. 15(a) is the results of DenseNets on 120000 pretreated dataset of size 20*20. The best accuracy is $\textbf{97.76\%}$. Fig. 15(b) is the results of DenseNets on 60000 original modeified MNIST dataset of size 45*45. The best accuracy is $\textbf{97.46\%}$.
+\begin{figure}[H]
+\centering
+\subfigure[20*20*600000 Dataset]{
+\label{dense 12}
+\includegraphics[width=0.45\linewidth]{fig/dense_120000.png}}
+\subfigure[20*20*120000 Dataset]{
+\label{dense 6}
+\includegraphics[width=0.45\linewidth]{fig/dense_60000.png}}
+\caption{The validation accuracy of CapsNet in pretreated dataset and original dataset respectively.}
+\label{fig:3pts} %% label for entire figure
+\end{figure}
+As we can see, the results obtained by DenseNets aren't promising conpared to the other deep learning methods. We think that bacause of the network architecture is very complex, it contians hundreds of layers, so there may exist some over-fitting problem.
+\subsection{Comparing Three Deep Learning Results}
+As we can see in Table 1, these three deep learning methods all have good results in this classification task. Among them, CNN works best, CapsNet is slightly weaker than CNN and the DenseNet becomes last. Considering the complex structure of DenseNet and the relatively small dataset, we think it's probably owe to the overfitting problem. \\
+Another phenomenon is that for the deep learning methods, the influence of pretreatment is not so huge as that of traditional methods. Without pretreatment, they can still have a acceptable accuracy, which might be one strength of them. 
+\begin{table}[H]
+\centering
+\renewcommand\arraystretch{1.2}
+    \caption{The results of Deep Learning Algorithms}
+    \centering
+\begin{tabularx}{0.6\linewidth}{cc}
+
+ \toprule
+\textbf{Methods} &\textbf{\textit{Test Accuracy}}
+\\ \midrule
+  CNN(20*20,12w) & 0.9933\\
+  CNN(45*45,6w) & 0.9804 \\
+  CapsNet(20*20,12w)  & 0.9923  \\
+  DenseNet(20*20,12w) & 0.9776 \\
+  DenseNet(45*45,6w) & 0.9746 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+
+\section{Conclusion}
+
+%Cross one column Table
+
+
+
+\begin{table}
+\centering
+\renewcommand\arraystretch{1.2}
+    \caption{The Best Results of Each Algorithm}
+    \centering
+\begin{tabularx}{0.6\linewidth}{cc}
+
+ \toprule
+\textbf{Methods} &\textbf{\textit{Test Accuracy}}
+\\ \midrule
+Logistic Regression &0.8705\\
+Decision Tree &0.9399\\
+Random Forest &0.9750\\
+SVM & 0.9933\\
+  CNN & 0.9933\\
+  CapsNet  & 0.9923  \\
+  DenseNet & 0.9776 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\ifCLASSOPTIONcaptionsoff
+  \newpage
+\fi
+
+\bibliographystyle{IEEEtran}
+\bibliography{ref}
+
+\end{document}
+
+

@@ -1,0 +1,268 @@
+
+
+\documentclass[journal]{IEEEtran}
+
+\ifCLASSINFOpdf
+\else
+\fi
+\usepackage{url}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{indentfirst}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage{tabularx}
+\usepackage{multirow}
+\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{subfigure}
+% correct bad hyphenation here
+\hyphenation{op-tical net-works semi-conduc-tor}
+
+
+\begin{document}
+
+\title{Retinal Vessel Segmentation Using Minimum Spanning Superpixel Tree Detector}
+
+\author{
+Zhiwen Qiang, 515030910367 \quad Leqi Zhu, 515020910272 \quad Yulun Wu, 5140719008
+}
+
+\maketitle
+
+% As a general rule, do not put math, special symbols or citations
+% in the abstract or keywords.
+\begin{abstract}
+Abstract goes here.
+\end{abstract}
+
+% Note that keywords are not normally used for peerreview papers.
+\begin{IEEEkeywords}
+Keyword 1, keyword 2, keyword 3.
+\end{IEEEkeywords}
+
+\IEEEpeerreviewmaketitle
+
+\section{Project Description}
+
+\IEEEPARstart{I}{ntroduction} goes here. 1. The research topics are very popular, very useful, and have great impact and research value
+
+2. The existing methods all have problems, the problems that you are going to solve in the paper
+
+3. Our methods have the theory, therefore our approach can solve the problems in theory as we have the designed
+
+4. Describe the advantages, features, logic, methods, processes, etc. of our methods
+
+5. List explicitly 3 to 4 our contributions/advantages like:
+Our work makes the following three main contributions:
+\begin{itemize}
+\item \textbf{Efficient Structure Restoration} The mixed use of different sizes of patches capture the structural information efficiently, avoiding the absorption of irrelevant information which causes abnormal structures;
+\item \textbf{Balanced Computational Workload} Multiscale solution with dynamic patches adjusts the computational workload in the operation. It significantly reduces the computation in low pyramid level without sacrificing the visual effects, and accelerates the completing process at the same time;
+\item \textbf{Parallel Search \& Competitive Mechanism} Parallel search for different size patches is conducted with GPU acceleration. A competitive mechanism is included to select the patch with minimum unit energy.
+\end{itemize}
+
+\section{Pretreatment}
+\textbf{Related Work One} XXXXXXXXXX
+
+XXXXXXXXXXXXXXX
+
+XXXXXXXXXXXXXXXXXXXXXXXXX
+
+XXXXXXXXXXXXXXXXXXXXXXXXX
+
+\textbf{Related Work Two} XXXXXXXXXXX
+
+XXXXXXXXXXXXXX
+
+XXXXXXXXXXXXXXXXXXXXXXXXX
+
+XXXXXXXXXXXXXXXXXXXXXXXXX
+
+\textbf{Related Work Three} XXXXXXXXX
+
+XXXXXXXXXXXXXXXX
+
+XXXXXXXXXXXXXXXXXXXXXXXXX
+
+\begin{table}[H]
+
+\begin{tabular}{cc}
+  \hline
+  % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+  Methods &\\
+
+    \hline
+\end{tabular}
+\end{table}
+
+
+
+\section{Deep Learning Methods}
+In this section, we tried to use deep learning methods in this task. We first introduce a simple implement of Convolutional Neural Network (CNN). Then we tried to use some recently popular deep neural network designs to conduct the classic MNIST classification problem.
+
+\subsection{Convolutional Neural Network(CNN)}
+\subsubsection{Algorithm Introduction} 
+\begin{itemize}
+  \item \textbf{Convolutional Neural Network (CNN)} is comprised of one or more convolutional layers (often with a subsampling step) and then followed by one or more fully connected layers as in a standard multilayer neural network. The architecture of a CNN is designed to take advantage of the 2D structure of an input image (or other 2D input such as a speech signal). This is achieved with local connections and tied weights followed by some form of pooling which results in translation invariant features. Another benefit of CNNs is that they are easier to train and have many fewer parameters than fully connected networks with the same number of hidden units.\cite{CNN}\\
+  \item \textbf{Dropout.}
+Because a fully connected layer occupies most of the parameters, it is prone to overfitting. One method to reduce overfitting is dropout. At each training stage, individual nodes are either "dropped out" of the net with probability $1-p$ or kept with probability$ p$, so that a reduced network is left; incoming and outgoing edges to a dropped-out node are also removed. Only the reduced network is trained on the data in that stage. The removed nodes are then reinserted into the network with their original weights.\cite{Dropout}. By avoiding training all nodes on all training data, dropout decreases overfitting. The method also significantly improves training speed. This makes model combination practical, even for deep neural nets. The technique seems to reduce node interactions, leading them to learn more robust features that better generalize to new data.\\
+\begin{figure}[H]
+\footnotesize\centering
+\centerline{\includegraphics[width=0.8\linewidth]{BN.png}}\caption{The Algorithm of Batch Normalization.}
+\label{Capsule}
+\end{figure}
+  \item \textbf{Batch Normalization} Training Deep Neural Networks is complicated by the fact
+that the distribution of each layer¡¯s inputs changes during training, as the parameters of the previous layers change. This slows down the training by requiring lower learning rates and careful parameter initialization, and makes it notoriously hard to train models with saturating nonlinearities.
+This phenomenon is called internal covariate shift, and address the problem by normalizing layer inputs.
+Batch Normalization draws its strength from making normalization a part of the model architecture and performing the normalization for each training mini-batch. Batch Normalization allows us to use much higher learning rates and be less careful about initialization. It also acts as a regularizer, in some cases eliminating the need for Dropout.\cite{DBLP:journals/corr/IoffeS15}\\
+\end{itemize}
+
+\subsubsection{Network structure}
+\begin{figure}
+\centering
+\subfigure[The structure of CNN]{
+\label{}
+\includegraphics[width=0.40\linewidth]{cnnex1.png}}
+\subfigure[The accuracy and loss while training]{
+\label{}
+\includegraphics[width=0.55\linewidth]{cnnex2.png}}
+\caption{The structure of our model and the parameters while training.}
+\label{fig:3pts} %% label for entire figure
+\end{figure}
+Our CNN model is consist of 2 convolution layers, two pooling layers, one fully-connected layer and the input/output layer. All the neural network layers use batch normalization.
+\begin{itemize}
+  \item Input layer: (20*20*120000 or 45*45*600000)
+  \item First convolution layer: kernel[5,5], channel 32.
+  \item First pooling layer
+  \item Second convolution layer: kernel[5,5], channel 48.
+  \item Second pooling layer
+  \item Full-connected layer, equipped with dropout.
+  \item Output layer.
+\end{itemize}
+
+\subsubsection{Experimental Results}
+We conduct the experiment on the initial 45*45*600000 dataset and preprocessed 20*20*120000 dataset.
+
+
+\begin{figure}
+\centering
+\subfigure[Preprocessed Dataset]{
+\label{}
+\includegraphics[width=0.45\linewidth]{cnn1.jpg}}
+\subfigure[Initial Dataset]{
+\label{} 
+\includegraphics[width=0.45\linewidth]{cnn2.jpg}}
+\caption{The validation accuracy of CNN in preprocessed dataset and initial dataset respectively.}
+\label{fig:3pts} %% label for entire figure
+\end{figure}
+\subsection{Capsule Network}
+\subsubsection{Algorithm Introduction}
+In this part we tried to use the idea of Hinton's Capsule Network \cite{Capsule}. in our project. A Capsule Neural Network (CapsNet) is a machine learning system that is a type of artificial neural network (ANN) that can be used to better model hierarchical relationships. The approach is an attempt to more closely mimic biological neural organization.\\
+\indent The idea is to add structures called capsules to a convolutional neural network (CNN), and to reuse output from several of those capsules to form more stable (with respect to various perturbations) representations for higher order capsules. The output is a vector consisting of the probability of an observation, and a pose for that observation. This vector is similar to what is done for example when doing classification with localization in CNNs.\\
+\indent A function called ¡°squashing" function is used to ensure the short vector get shrunk to almost zero length and long vectors get shrunk to a length slightly below 1 while keep the direction the same.
+$$ v_j= \frac{{\parallel s_j\parallel}^2}{{1+\parallel s_j\parallel }^2} \frac{s_j}{\parallel s_j\parallel}$$
+The loss function used in CapsNet is the Margin loss $L_k$.:
+
+
+\begin{multline*}
+      L_k= T_k\;max(0,m^+-\parallel v_k\parallel)^2\\  
+         +\lambda (1-T_k)max(0,\parallel v_k\parallel-m^-)^2
+\end{multline*}
+
+\subsubsection{Network Constructure}
+
+A simple model is shown in \ref{Capsule} introduced by \cite{Capsule}.  The architecture is shallow with only two convolutional layers and one fully connected layer. Conv1 has 256, $9 \times 9$ convolution kernels with a
+stride of 1 and ReLU activation. This layer converts pixel intensities to the activities of local feature
+detectors that are then used as inputs to the primary capsules.\\
+
+\begin{figure}[H]
+\footnotesize\centering
+\centerline{\includegraphics[width=1\linewidth]{Capsule.png}}\caption{A simple CapsNet with 3 layers.}
+\label{Capsule}
+\end{figure}
+\indent The primary capsules are the lowest level of multi-dimensional entities and, from an inverse graphics
+perspective, activating the primary capsules corresponds to inverting the rendering process. This is a
+very different type of computation than piecing instantiated parts together to make familiar wholes.
+The second layer (PrimaryCapsules) is a convolutional capsule layer with 32 channels of convolutional
+8D capsules (i.e. each primary capsule contains 8 convolutional units with a $9 \times 9$ kernel and a stride
+of 2). Each primary capsule output sees the outputs of all $256 \times81$ Conv1 units whose receptive fields overlap with the location of the center of the capsule. In total PrimaryCapsules has $[32 \times 6 \times 6]$
+capsule outputs (each output is an 8D vector) and each capsule in the $[6 \times 6]$ grid is sharing their
+weights with each other. One can see PrimaryCapsules as a Convolution layer. The final Layer (DigitCaps) has one 16D capsule per digit class and each of these capsules receives input from all the capsules in the layer below.
+
+The network we used is similar with the one discussed above. We use $20\times20$ image as input instead. The implement of CapsNet is finished in Tensorflow.
+
+
+\section{Experimental Results}
+
+\begin{figure}
+\centering
+\subfigure[Preprocessed Dataset]{
+\label{}
+\includegraphics[width=0.43\linewidth]{caps1.jpg}}
+\subfigure[Initial Dataset]{
+\label{}
+\includegraphics[width=0.45\linewidth]{caps2.jpg}}
+\caption{The validation accuracy of CapsNet in preprocessed dataset and initial dataset respectively.}
+\label{fig:3pts} %% label for entire figure
+\end{figure}
+
+\section{Conclusion and Future Work}
+
+%Cross one column Table
+\begin{table}
+\centering
+\renewcommand\arraystretch{1.2}
+    \caption{The results of Deep Learning Algorithms}
+    \centering
+\begin{tabularx}{0.6\linewidth}{cc}
+
+ \toprule
+\textbf{Methods} &\textbf{\textit{Test Accuracy}}
+\\ \midrule
+  CNN(20*20,12w) & 0.9933\\
+  CNN(45*45,6w) & 0.9804 \\
+  CapsNet(20*20,12w)  & 0.9923  \\
+  DenseNet(20*20,12w) & 0.9776 \\
+  DenseNet(45*45,6w) & 0.9746 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+
+\begin{table}
+\centering
+\renewcommand\arraystretch{1.2}
+    \caption{The Best Results of Each Algorithm}
+    \centering
+\begin{tabularx}{0.6\linewidth}{cc}
+
+ \toprule
+\textbf{Methods} &\textbf{\textit{Test Accuracy}}
+\\ \midrule
+Logistic Regression &0.8705\\
+Decision Tree &0.9399\\
+Random Forest &0.9750\\
+SVM & 0.9933\\
+  CNN & 0.9933\\
+  CapsNet  & 0.9923  \\
+  DenseNet & 0.9776 \\
+\bottomrule
+\end{tabularx}
+\end{table}p
+
+\ifCLASSOPTIONcaptionsoff
+  \newpage
+\fi
+
+\bibliographystyle{IEEEtran}
+\bibliography{ref}
+
+\end{document}
+
+
